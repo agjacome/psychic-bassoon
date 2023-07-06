@@ -1,0 +1,17 @@
+node_modules
+.pnp
+.pnp.js
+.npm
+.env
+.env*.local
+dist
+*.sqlite
+*.sqlite-journal
+npm-debug.log*
+*.log
+logs
+pids
+*.pid
+*.seed
+.eslintcache
+read_projection.json

@@ -1,0 +1,9 @@
+.eslintcache
+.eslintrc*
+.prettierrc*
+dist
+flake.*
+jest.config.*
+logs
+node_modules
+pnpm-lock.json

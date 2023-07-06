@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "declaration": false,
+    "lib": ["es2019", "es2020", "es2021", "esnext"],
+    "module": "commonjs",
+    "noEmit": false,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "sourceMap": true,
+    "target": "es2019",
+
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "listEmittedFiles": false,
+    "listFiles": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "pretty": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "traceResolution": false,
+
+    "baseUrl": "./",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "paths": {
+      "@shared/*": ["src/shared/*"],
+      "@core/*": ["src/core/*"],
+      "@presentation/*": ["src/presentation/*"],
+      "@test/*": ["test/*"],
+      "@/*": ["src/*"]
+    },
+    "typeRoots": ["../node_modules/@types", "node_modules/@types", "src/types"]
+  },
+  "exclude": ["node_modules", "dist"],
+  "compileOnSave": false
+}
