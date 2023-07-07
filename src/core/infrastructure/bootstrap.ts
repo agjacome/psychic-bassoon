@@ -12,7 +12,8 @@ import {
 import {
   CreateAssetHandler,
   CreateBuildingHandler,
-  CreatePortfolioHandler
+  CreatePortfolioHandler,
+  RollbackPortfolioHandler
 } from '@core/application/portfolio/commands';
 import {
   GetAllPortfoliosHandler,
@@ -22,7 +23,7 @@ import {
 import { getEnvStr } from './config';
 import { InMemoryDomainEventBus } from './events';
 import { InMemoryCommandBus, InMemoryQueryProcessor } from './messages';
-import { type EventStore, EventStoreHandler } from './store/store';
+import { EventStoreHandler } from './store/store';
 import { PrismaEventStore } from './store/prismaStore';
 import { EventProjectionHandler, type EventProjection } from './store/projection';
 import { JsonMappedEventProjection } from './store/jsonProjection';
@@ -70,7 +71,8 @@ export async function bootstrap(): Promise<void> {
       return new InMemoryCommandBus([
         new CreatePortfolioHandler() as CommandHandler<Command>,
         new CreateAssetHandler() as CommandHandler<Command>,
-        new CreateBuildingHandler() as CommandHandler<Command>
+        new CreateBuildingHandler() as CommandHandler<Command>,
+        new RollbackPortfolioHandler() as CommandHandler<Command>
       ]);
     }
   };
@@ -83,8 +85,7 @@ export async function bootstrap(): Promise<void> {
 }
 
 async function initialize(): Promise<void> {
-  const eventStore = ServiceLocator.resolve<EventStore>('EventStore');
   const projection = ServiceLocator.resolve<EventProjection>('EventProjection');
 
-  await projection.applyAll(eventStore);
+  await projection.initialize();
 }

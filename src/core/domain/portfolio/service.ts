@@ -2,12 +2,18 @@ import { sealed } from '@shared/decorators';
 import { ServiceLocator } from '@shared/utils';
 import { type DomainEvent, type DomainEventDispatcher } from '../shared';
 import { type Address, type Asset, type Building, PortfolioId, type Portfolio } from './types';
-import { type PortfolioCreated, type AssetCreated, type BuildingCreated } from './events';
+import {
+  type PortfolioCreated,
+  type AssetCreated,
+  type BuildingCreated,
+  type PortfolioRollbacked
+} from './events';
 import { type PortfolioRepository } from './repository';
 import {
   AddressAlreadyTaken,
   AssetAlreadyExists,
   AssetNotFound,
+  InvalidRollbackTimestamp,
   PortfolioNotFound
 } from './errors';
 
@@ -42,6 +48,10 @@ export class PortfolioService {
   }
 
   public async getPortfolioHistory(portfolioId: PortfolioId): Promise<DomainEvent[]> {
+    if (!(await this.portfolioExists(portfolioId))) {
+      throw new PortfolioNotFound(portfolioId);
+    }
+
     return await this.history.get(portfolioId);
   }
 
@@ -116,6 +126,24 @@ export class PortfolioService {
     });
 
     onComplete(building);
+  }
+
+  public async rollbackPortfolio(portfolioId: PortfolioId, timestamp: Date): Promise<void> {
+    if (!(await this.portfolioExists(portfolioId))) {
+      throw new PortfolioNotFound(portfolioId);
+    }
+
+    const now = new Date();
+    if (timestamp > now) {
+      throw new InvalidRollbackTimestamp(timestamp);
+    }
+
+    await this.dispatcher.dispatch<PortfolioRollbacked>({
+      name: 'PortfolioRollbacked',
+      aggregateId: portfolioId,
+      timestamp: now,
+      payload: { timestamp }
+    });
   }
 
   private async generatePortfolioId(): Promise<PortfolioId> {

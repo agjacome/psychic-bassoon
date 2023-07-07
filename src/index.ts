@@ -3,7 +3,7 @@ import * as core from '@core/infrastructure/bootstrap';
 import * as rest from '@presentation/rest/bootstrap';
 import { type Server } from '@presentation/rest/server';
 
-const main = async () => {
+async function main() {
   await core.bootstrap();
   console.log('Core initialized');
 
@@ -12,7 +12,7 @@ const main = async () => {
 
   const server = ServiceLocator.resolve<Server>('Server');
   server.start();
-};
+}
 
 main().catch(err => {
   console.error(err);

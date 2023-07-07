@@ -10,3 +10,9 @@ export type BuildingCreated = DomainEvent<
   PortfolioId,
   { assetName: string; addresses: Set<Address> }
 >;
+
+export type PortfolioRollbacked = DomainEvent<
+  'PortfolioRollbacked',
+  PortfolioId,
+  { timestamp: Date }
+>;

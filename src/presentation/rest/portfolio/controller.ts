@@ -10,7 +10,8 @@ import { type CommandDispatcher, type QueryProcessor } from '@core/application/s
 import {
   type CreateBuilding,
   type CreateAsset,
-  type CreatePortfolio
+  type CreatePortfolio,
+  type RollbackPortfolio
 } from '@core/application/portfolio/commands';
 import {
   type GetPortfolioHistory,
@@ -22,6 +23,7 @@ import { PortfolioRoutes } from './routes';
 const CreatePortfolioSchema = z.object({ name: z.string() });
 const CreateAssetSchema = z.object({ name: z.string() });
 const CreateBuildingSchema = z.object({ addresses: z.array(z.string()) });
+const RollbackPortfolioSchema = z.object({ timestamp: z.coerce.date() });
 
 @sealed
 export class PortfolioController {
@@ -94,5 +96,17 @@ export class PortfolioController {
     });
 
     res.status(StatusCodes.CREATED).send();
+  }
+
+  public async rollbackPortfolio(req: Request, res: Response): Promise<void> {
+    const portfolioId = req.params.portfolioId;
+    const { timestamp } = RollbackPortfolioSchema.parse(req.body);
+
+    await this.dispatcher.dispatch<RollbackPortfolio>({
+      name: 'RollbackPortfolio',
+      arguments: { portfolioId, timestamp }
+    });
+
+    res.status(StatusCodes.ACCEPTED).send();
   }
 }

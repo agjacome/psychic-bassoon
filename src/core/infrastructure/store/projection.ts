@@ -2,12 +2,11 @@ import { sealed } from '@shared/decorators';
 import { ServiceLocator } from '@shared/utils';
 import { type DomainEventHandler, type DomainEvent } from '@core/domain/shared';
 import { type Address, type Portfolio, type PortfolioId } from '@core/domain/portfolio/types';
-import { type EventStore } from './store';
 
 export interface EventProjection {
+  initialize(): Promise<void>;
+  replay(): Promise<void>;
   apply(event: DomainEvent): Promise<void>;
-  applyAll(eventStore: EventStore): Promise<void>;
-  replay(event: EventStore): Promise<void>;
 
   portfolios(): Promise<Map<PortfolioId, Portfolio>>;
   addresses(): Promise<Set<Address>>;

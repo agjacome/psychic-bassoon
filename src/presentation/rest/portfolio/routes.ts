@@ -9,6 +9,7 @@ export const PortfolioRoutes = {
   createPortfolio: '/portfolios',
   createAsset: '/portfolios/:portfolioId/assets',
   createBuilding: '/portfolios/:portfolioId/assets/:assetName/buildings',
+  rollbackPortfolio: '/portfolios/:portfolioId/rollback',
 
   setup(router: express.Router, controller: PortfolioController): void {
     router.get(this.getPortfolioById, (req, res, next) => {
@@ -33,6 +34,10 @@ export const PortfolioRoutes = {
 
     router.post(this.createBuilding, (req, res, next) => {
       controller.createBuilding(req, res).catch(next);
+    });
+
+    router.put(this.rollbackPortfolio, (req, res, next) => {
+      controller.rollbackPortfolio(req, res).catch(next);
     });
   }
 };

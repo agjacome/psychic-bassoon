@@ -13,13 +13,6 @@ export type CreatePortfolio = Command<
   }
 >;
 
-export type CreateAsset = Command<'CreateAsset', { portfolioId: string; name: string }>;
-
-export type CreateBuilding = Command<
-  'CreateBuilding',
-  { portfolioId: string; assetName: string; addresses: Set<string> }
->;
-
 @sealed
 export class CreatePortfolioHandler implements CommandHandler<CreatePortfolio> {
   constructor(
@@ -35,6 +28,8 @@ export class CreatePortfolioHandler implements CommandHandler<CreatePortfolio> {
     await this.service.createPortfolio(command.arguments.name, onComplete);
   }
 }
+
+export type CreateAsset = Command<'CreateAsset', { portfolioId: string; name: string }>;
 
 @sealed
 export class CreateAssetHandler implements CommandHandler<CreateAsset> {
@@ -56,6 +51,11 @@ export class CreateAssetHandler implements CommandHandler<CreateAsset> {
     await this.service.createAsset(portfolioId, command.arguments.name, noop);
   }
 }
+
+export type CreateBuilding = Command<
+  'CreateBuilding',
+  { portfolioId: string; assetName: string; addresses: Set<string> }
+>;
 
 @sealed
 export class CreateBuildingHandler implements CommandHandler<CreateBuilding> {
@@ -80,5 +80,31 @@ export class CreateBuildingHandler implements CommandHandler<CreateBuilding> {
       command.arguments.addresses,
       noop
     );
+  }
+}
+
+export type RollbackPortfolio = Command<
+  'RollbackPortfolio',
+  { portfolioId: string; timestamp: Date }
+>;
+
+@sealed
+export class RollbackPortfolioHandler implements CommandHandler<RollbackPortfolio> {
+  constructor(
+    private readonly service = ServiceLocator.resolve<PortfolioService>('PortfolioService')
+  ) {}
+
+  public matches(command: Command): command is RollbackPortfolio {
+    return command.name === 'RollbackPortfolio';
+  }
+
+  public async handle(command: RollbackPortfolio): Promise<void> {
+    const portfolioId = PortfolioId.parse(command.arguments.portfolioId);
+
+    if (portfolioId === null) {
+      throw new InvalidPortfolioId(command.arguments.portfolioId);
+    }
+
+    await this.service.rollbackPortfolio(portfolioId, command.arguments.timestamp);
   }
 }

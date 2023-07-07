@@ -39,3 +39,10 @@ export class AddressAlreadyTaken extends DomainException {
     super('ADDRESS_ALREADY_TAKEN', `Addresses already taken: ${Array.from(addresses).join(', ')}`);
   }
 }
+
+@sealed
+export class InvalidRollbackTimestamp extends DomainException {
+  constructor(timestamp: Date) {
+    super('INVALID_ROLLBACK_TIMESTAMP', `Invalid rollback timestamp: ${timestamp.toISOString()}`);
+  }
+}
