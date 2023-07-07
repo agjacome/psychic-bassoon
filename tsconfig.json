@@ -33,7 +33,6 @@
       "@shared/*": ["src/shared/*"],
       "@core/*": ["src/core/*"],
       "@presentation/*": ["src/presentation/*"],
-      "@test/*": ["test/*"],
       "@/*": ["src/*"]
     },
     "typeRoots": ["../node_modules/@types", "node_modules/@types", "src/types"]
