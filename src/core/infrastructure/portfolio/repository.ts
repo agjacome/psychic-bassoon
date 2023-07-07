@@ -13,7 +13,7 @@ export class EventProjectionPortfolioRepository implements PortfolioRepository {
     return portfolios.get(id) ?? null;
   }
 
-  public async all(): Promise<Array<Portfolio>> {
+  public async all(): Promise<Portfolio[]> {
     const portfolios = await this.db.portfolios();
     return Array.from(portfolios.values());
   }

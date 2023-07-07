@@ -25,7 +25,7 @@ export interface AggregateRoot<Id extends AggregateId = AggregateId> {
 export interface DomainEvent<
   Name extends string = string,
   EntityId extends AggregateId = AggregateId,
-  Payload = unknown
+  Payload = Record<string, unknown>
 > {
   readonly name: Name;
   readonly aggregateId: EntityId;

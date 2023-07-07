@@ -9,25 +9,25 @@ export interface EventStore {
 
 export type FindQuery =
   | ReturnType<typeof FindQuery.All>
-  | ReturnType<typeof FindQuery.Name>
-  | ReturnType<typeof FindQuery.AggregateId>
-  | ReturnType<typeof FindQuery.AggregateIdBeforeThan>
-  | ReturnType<typeof FindQuery.LaterThan>;
+  | ReturnType<typeof FindQuery.ByName>
+  | ReturnType<typeof FindQuery.ByAggregateId>
+  | ReturnType<typeof FindQuery.ByAggregateIdBeforeThan>
+  | ReturnType<typeof FindQuery.ByLaterThan>;
 
 export const FindQuery = {
   All() {
     return { type: 'All' } as const;
   },
-  Name(name: string) {
+  ByName(name: string) {
     return { type: 'Name', name } as const;
   },
-  AggregateId(aggregateId: AggregateId) {
+  ByAggregateId(aggregateId: AggregateId) {
     return { type: 'AggregateId', aggregateId } as const;
   },
-  AggregateIdBeforeThan(aggregateId: AggregateId, timestamp: Date) {
+  ByAggregateIdBeforeThan(aggregateId: AggregateId, timestamp: Date) {
     return { type: 'AggregateIdBeforeThan', aggregateId, timestamp } as const;
   },
-  LaterThan(timestamp: Date) {
+  ByLaterThan(timestamp: Date) {
     return { type: 'LaterThan', timestamp } as const;
   }
 };

@@ -14,7 +14,11 @@ import {
   CreateBuildingHandler,
   CreatePortfolioHandler
 } from '@core/application/portfolio/commands';
-import { GetAllPortfoliosHandler, GetPortfolioHandler } from '@core/application/portfolio/queries';
+import {
+  GetAllPortfoliosHandler,
+  GetPortfolioHandler,
+  GetPortfolioHistoryHandler
+} from '@core/application/portfolio/queries';
 import { getEnvStr } from './config';
 import { InMemoryDomainEventBus } from './events';
 import { InMemoryCommandBus, InMemoryQueryProcessor } from './messages';
@@ -23,6 +27,7 @@ import { PrismaEventStore } from './store/prismaStore';
 import { EventProjectionHandler, type EventProjection } from './store/projection';
 import { JsonMappedEventProjection } from './store/jsonProjection';
 import { EventProjectionPortfolioRepository } from './portfolio/repository';
+import { StorePortfolioHistory } from './portfolio/service';
 
 export const CoreConfig = Object.freeze({
   READ_PROJECTION_FILE: getEnvStr('READ_PROJECTION_FILE', 'event-store.json')
@@ -42,6 +47,9 @@ export async function bootstrap(): Promise<void> {
     PortfolioRepository: () => {
       return new EventProjectionPortfolioRepository();
     },
+    PortfolioHistory: () => {
+      return new StorePortfolioHistory();
+    },
     PortfolioService: () => {
       return new PortfolioService();
     },
@@ -54,7 +62,8 @@ export async function bootstrap(): Promise<void> {
     QueryProcessor: () => {
       return new InMemoryQueryProcessor([
         new GetPortfolioHandler() as QueryHandler<Query>,
-        new GetAllPortfoliosHandler() as QueryHandler<Query>
+        new GetAllPortfoliosHandler() as QueryHandler<Query>,
+        new GetPortfolioHistoryHandler() as QueryHandler<Query>
       ]);
     },
     CommandDispatcher: () => {

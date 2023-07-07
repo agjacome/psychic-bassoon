@@ -1,6 +1,6 @@
 import { sealed } from '@shared/decorators';
 import { ServiceLocator } from '@shared/utils';
-import { type DomainEventDispatcher } from '../shared';
+import { type DomainEvent, type DomainEventDispatcher } from '../shared';
 import { type Address, type Asset, type Building, PortfolioId, type Portfolio } from './types';
 import { type PortfolioCreated, type AssetCreated, type BuildingCreated } from './events';
 import { type PortfolioRepository } from './repository';
@@ -11,13 +11,20 @@ import {
   PortfolioNotFound
 } from './errors';
 
+export interface PortfolioHistory {
+  get(id: PortfolioId): Promise<DomainEvent[]>;
+}
+
 @sealed
 export class PortfolioService {
   constructor(
     private readonly dispatcher = ServiceLocator.resolve<DomainEventDispatcher>(
       'DomainEventDispatcher'
     ),
-    private readonly repository = ServiceLocator.resolve<PortfolioRepository>('PortfolioRepository')
+    private readonly repository = ServiceLocator.resolve<PortfolioRepository>(
+      'PortfolioRepository'
+    ),
+    private readonly history = ServiceLocator.resolve<PortfolioHistory>('PortfolioHistory')
   ) {}
 
   public async getPortfolioById(portfolioId: PortfolioId): Promise<Portfolio> {
@@ -30,8 +37,12 @@ export class PortfolioService {
     return portfolio;
   }
 
-  public async getAllPortfolios(): Promise<Array<Portfolio>> {
+  public async getAllPortfolios(): Promise<Portfolio[]> {
     return await this.repository.all();
+  }
+
+  public async getPortfolioHistory(portfolioId: PortfolioId): Promise<DomainEvent[]> {
+    return await this.history.get(portfolioId);
   }
 
   public async createPortfolio(
@@ -90,8 +101,9 @@ export class PortfolioService {
       throw new AssetNotFound(portfolioId, assetName);
     }
 
-    if (await this.addressExists(addresses)) {
-      throw new AddressAlreadyTaken(addresses);
+    const existingAddresses = await this.filterExistingAddresses(addresses);
+    if (existingAddresses.size > 0) {
+      throw new AddressAlreadyTaken(existingAddresses);
     }
 
     const building: Building = { addresses };
@@ -130,8 +142,11 @@ export class PortfolioService {
     return Array.from(portfolio.assets).some(asset => asset.name === assetName);
   }
 
-  private async addressExists(addresses: Set<Address>): Promise<boolean> {
+  private async filterExistingAddresses(addresses: Set<Address>): Promise<Set<Address>> {
     const existing = await this.repository.addresses();
-    return Array.from(addresses).some(a => existing.has(a));
+
+    const duplicates = Array.from(addresses).filter(a => existing.has(a));
+
+    return new Set(duplicates);
   }
 }

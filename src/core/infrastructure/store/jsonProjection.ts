@@ -48,7 +48,7 @@ export class JsonMappedEventProjection implements EventProjection {
   }
 
   public async applyAll(eventStore: EventStore): Promise<void> {
-    const events = await eventStore.find(Q.LaterThan(this.state.lastTimestamp));
+    const events = await eventStore.find(Q.ByLaterThan(this.state.lastTimestamp));
 
     for (const event of events) {
       await this.apply(event);

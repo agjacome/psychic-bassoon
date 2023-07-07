@@ -12,7 +12,11 @@ import {
   type CreateAsset,
   type CreatePortfolio
 } from '@core/application/portfolio/commands';
-import { type GetAllPortfolios, type GetPortfolio } from '@core/application/portfolio/queries';
+import {
+  type GetPortfolioHistory,
+  type GetAllPortfolios,
+  type GetPortfolio
+} from '@core/application/portfolio/queries';
 import { PortfolioRoutes } from './routes';
 
 const CreatePortfolioSchema = z.object({ name: z.string() });
@@ -33,6 +37,15 @@ export class PortfolioController {
     });
 
     res.status(StatusCodes.OK).json(serialize(portfolio));
+  }
+
+  public async getPortfolioHistory(req: Request, res: Response): Promise<void> {
+    const portfolioHistory = await this.processor.process<GetPortfolioHistory>({
+      name: 'GetPortfolioHistory',
+      arguments: { portfolioId: req.params.portfolioId }
+    });
+
+    res.status(StatusCodes.OK).json(serialize(portfolioHistory));
   }
 
   public async getAllPortfolios(_req: Request, res: Response): Promise<void> {
