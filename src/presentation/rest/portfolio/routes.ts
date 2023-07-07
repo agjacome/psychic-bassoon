@@ -2,24 +2,32 @@ import type express from 'express';
 
 import { type PortfolioController } from './controller';
 
-export function setup(router: express.Router, controller: PortfolioController): void {
-  router.get('/portfolios/:portfolioId', (req, res, next) => {
-    controller.getPortfolioById(req, res).catch(next);
-  });
+export const PortfolioRoutes = {
+  getPortfolioById: '/portfolios/:portfolioId',
+  getAllPortfolios: '/portfolios',
+  createPortfolio: '/portfolios',
+  createAsset: '/portfolios/:portfolioId/assets',
+  createBuilding: '/portfolios/:portfolioId/assets/:assetName/buildings',
 
-  router.get('/portfolios', (req, res, next) => {
-    controller.getAllPortfolios(req, res).catch(next);
-  });
+  setup(router: express.Router, controller: PortfolioController): void {
+    router.get(this.getPortfolioById, (req, res, next) => {
+      controller.getPortfolioById(req, res).catch(next);
+    });
 
-  router.post('/portfolios', (req, res, next) => {
-    controller.createPortfolio(req, res).catch(next);
-  });
+    router.get(this.getAllPortfolios, (req, res, next) => {
+      controller.getAllPortfolios(req, res).catch(next);
+    });
 
-  router.post('/portfolios/:portfolioId/assets', (req, res, next) => {
-    controller.createAsset(req, res).catch(next);
-  });
+    router.post(this.createPortfolio, (req, res, next) => {
+      controller.createPortfolio(req, res).catch(next);
+    });
 
-  router.post('/portfolios/:portfolioId/assets/:assetName/buildings', (req, res, next) => {
-    controller.createBuilding(req, res).catch(next);
-  });
+    router.post(this.createAsset, (req, res, next) => {
+      controller.createAsset(req, res).catch(next);
+    });
+
+    router.post(this.createBuilding, (req, res, next) => {
+      controller.createBuilding(req, res).catch(next);
+    });
+  }
 };

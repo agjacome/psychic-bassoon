@@ -1,10 +1,11 @@
 import { type Request, type Response } from 'express';
-import { ReasonPhrases, StatusCodes } from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes';
 import { serialize } from 'superjson';
 import { z } from 'zod';
 
 import { sealed } from '@shared/decorators';
 import { ServiceLocator } from '@shared/utils';
+import { type PortfolioId } from '@core/domain/portfolio/types';
 import { type CommandDispatcher, type QueryProcessor } from '@core/application/shared';
 import {
   type CreateBuilding,
@@ -12,6 +13,7 @@ import {
   type CreatePortfolio
 } from '@core/application/portfolio/commands';
 import { type GetAllPortfolios, type GetPortfolio } from '@core/application/portfolio/queries';
+import { PortfolioRoutes } from './routes';
 
 const CreatePortfolioSchema = z.object({ name: z.string() });
 const CreateAssetSchema = z.object({ name: z.string() });
@@ -45,12 +47,15 @@ export class PortfolioController {
   public async createPortfolio(req: Request, res: Response): Promise<void> {
     const { name } = CreatePortfolioSchema.parse(req.body);
 
+    const buildLocation = (id: PortfolioId) =>
+      PortfolioRoutes.getPortfolioById.replace(':portfolioId', id);
+
     await this.dispatcher.dispatch<CreatePortfolio>({
       name: 'CreatePortfolio',
-      arguments: { name }
+      arguments: { name, onComplete: id => res.location(buildLocation(id)) }
     });
 
-    res.status(StatusCodes.CREATED).send(ReasonPhrases.CREATED);
+    res.status(StatusCodes.CREATED).send();
   }
 
   public async createAsset(req: Request, res: Response): Promise<void> {
@@ -62,7 +67,7 @@ export class PortfolioController {
       arguments: { portfolioId, name }
     });
 
-    res.status(StatusCodes.CREATED).send(ReasonPhrases.CREATED);
+    res.status(StatusCodes.CREATED).send();
   }
 
   public async createBuilding(req: Request, res: Response): Promise<void> {
@@ -75,6 +80,6 @@ export class PortfolioController {
       arguments: { portfolioId, assetName, addresses: new Set(addresses) }
     });
 
-    res.status(StatusCodes.CREATED).send(ReasonPhrases.CREATED);
+    res.status(StatusCodes.CREATED).send();
   }
 }

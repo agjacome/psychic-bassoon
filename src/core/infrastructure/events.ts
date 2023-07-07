@@ -16,6 +16,8 @@ export class InMemoryDomainEventBus implements DomainEventDispatcher {
       console.warn(`No DomainEventHandler registered for event ${event.name}`);
     }
 
-    await Promise.all(matching.map(h => h.handle(event)));
+    for (const handler of matching) {
+      await handler.handle(event);
+    }
   }
 }

@@ -5,7 +5,7 @@ import { sealed } from '@shared/decorators';
 import { ServiceLocator } from '@shared/utils';
 import { RestConfig } from './config';
 import { type PortfolioController } from './portfolio/controller';
-import * as portfolioRoutes from './portfolio/routes';
+import { PortfolioRoutes } from './portfolio/routes';
 
 @sealed
 export class Server {
@@ -38,7 +38,7 @@ export class Server {
   private router() {
     const router = express.Router();
 
-    portfolioRoutes.setup(router, this.portfolio);
+    PortfolioRoutes.setup(router, this.portfolio);
 
     return router;
   }

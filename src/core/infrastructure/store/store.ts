@@ -34,7 +34,7 @@ export const FindQuery = {
 
 @sealed
 export class EventStoreHandler implements DomainEventHandler<DomainEvent> {
-  constructor(private readonly store = ServiceLocator.resolve<EventStore>('EventStore')) { }
+  constructor(private readonly store = ServiceLocator.resolve<EventStore>('EventStore')) {}
 
   public matches(_event: DomainEvent): _event is DomainEvent {
     return true;

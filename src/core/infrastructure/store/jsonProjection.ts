@@ -67,7 +67,6 @@ export class JsonMappedEventProjection implements EventProjection {
     }
   }
 
-
   public portfolios(): Promise<Map<PortfolioId, Portfolio>> {
     return new Promise(resolve => {
       // deep clone to prevent extenal mutation of the projection

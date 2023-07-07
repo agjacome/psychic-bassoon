@@ -34,7 +34,10 @@ export class PortfolioService {
     return await this.repository.all();
   }
 
-  public async createPortfolio(name: string): Promise<Portfolio> {
+  public async createPortfolio(
+    name: string,
+    onComplete: (portfolio: Portfolio) => void
+  ): Promise<void> {
     const portfolioId = await this.generatePortfolioId();
     const portfolio: Portfolio = { id: portfolioId, name, assets: new Set() };
 
@@ -45,10 +48,14 @@ export class PortfolioService {
       payload: { name }
     });
 
-    return portfolio;
+    onComplete(portfolio);
   }
 
-  public async createAsset(portfolioId: PortfolioId, name: string): Promise<Asset> {
+  public async createAsset(
+    portfolioId: PortfolioId,
+    name: string,
+    onComplete: (asset: Asset) => void
+  ): Promise<void> {
     if (!(await this.portfolioExists(portfolioId))) {
       throw new PortfolioNotFound(portfolioId);
     }
@@ -66,14 +73,15 @@ export class PortfolioService {
       payload: { name }
     });
 
-    return asset;
+    onComplete(asset);
   }
 
   public async createBuilding(
     portfolioId: PortfolioId,
     assetName: string,
-    addresses: Set<Address>
-  ): Promise<Building> {
+    addresses: Set<Address>,
+    onComplete: (building: Building) => void
+  ): Promise<void> {
     if (!(await this.portfolioExists(portfolioId))) {
       throw new PortfolioNotFound(portfolioId);
     }
@@ -95,7 +103,7 @@ export class PortfolioService {
       payload: { assetName, addresses }
     });
 
-    return building;
+    onComplete(building);
   }
 
   private async generatePortfolioId(): Promise<PortfolioId> {

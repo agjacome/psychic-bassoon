@@ -41,6 +41,8 @@ export class InMemoryCommandBus implements CommandDispatcher {
       console.error(`InMemoryCommandBus: No handler registered for command ${command.name}`);
     }
 
-    await Promise.all(handlers.map(h => h.handle(command)));
+    for (const handler of handlers) {
+      await handler.handle(command);
+    }
   }
 }

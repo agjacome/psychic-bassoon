@@ -1,3 +1,7 @@
+export function noop(): void {
+  return;
+}
+
 export const ServiceLocator = (() => {
   const services: Map<string, () => unknown> = new Map<string, () => unknown>();
 

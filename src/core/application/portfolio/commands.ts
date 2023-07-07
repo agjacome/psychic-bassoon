@@ -1,11 +1,17 @@
 import { sealed } from '@shared/decorators';
-import { ServiceLocator } from '@shared/utils';
-import { PortfolioId } from '@core/domain/portfolio/types';
+import { ServiceLocator, noop } from '@shared/utils';
+import { type Portfolio, PortfolioId } from '@core/domain/portfolio/types';
 import { type PortfolioService } from '@core/domain/portfolio/service';
 import { type CommandHandler, type Command } from '../shared';
 import { InvalidPortfolioId } from '@core/domain/portfolio/errors';
 
-export type CreatePortfolio = Command<'CreatePortfolio', { name: string }>;
+export type CreatePortfolio = Command<
+  'CreatePortfolio',
+  {
+    name: string;
+    onComplete: (id: PortfolioId) => void;
+  }
+>;
 
 export type CreateAsset = Command<'CreateAsset', { portfolioId: string; name: string }>;
 
@@ -25,7 +31,8 @@ export class CreatePortfolioHandler implements CommandHandler<CreatePortfolio> {
   }
 
   public async handle(command: CreatePortfolio): Promise<void> {
-    await this.service.createPortfolio(command.arguments.name);
+    const onComplete = (p: Portfolio) => command.arguments.onComplete(p.id);
+    await this.service.createPortfolio(command.arguments.name, onComplete);
   }
 }
 
@@ -46,7 +53,7 @@ export class CreateAssetHandler implements CommandHandler<CreateAsset> {
       throw new InvalidPortfolioId(command.arguments.portfolioId);
     }
 
-    await this.service.createAsset(portfolioId, command.arguments.name);
+    await this.service.createAsset(portfolioId, command.arguments.name, noop);
   }
 }
 
@@ -70,7 +77,8 @@ export class CreateBuildingHandler implements CommandHandler<CreateBuilding> {
     await this.service.createBuilding(
       portfolioId,
       command.arguments.assetName,
-      command.arguments.addresses
+      command.arguments.addresses,
+      noop
     );
   }
 }

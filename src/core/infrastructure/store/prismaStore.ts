@@ -27,20 +27,8 @@ export class PrismaEventStore implements EventStore {
     await this.events.create({ data });
   }
 
-  public find(query: FindQuery): Promise<DomainEvent[]> {
-    const toDomainEvents = (events: PrismaEvent[]): DomainEvent[] => {
-      return events.map(event => {
-        return {
-          name: event.name,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          aggregateId: AggregateId.parse(event.aggregateId)!,
-          timestamp: event.timestamp,
-          payload: superjson.parse(event.payload)
-        };
-      });
-    };
-
-    const buildWhereArgs = () => {
+  public async find(query: FindQuery): Promise<DomainEvent[]> {
+    const where = () => {
       switch (query.type) {
         case 'All':
           return {};
@@ -58,8 +46,19 @@ export class PrismaEventStore implements EventStore {
       }
     };
 
-    return this.events
-      .findMany({ where: buildWhereArgs(), orderBy: { timestamp: 'asc' } })
-      .then(toDomainEvents);
+    const events = await this.events.findMany({
+      where: where(),
+      orderBy: { timestamp: 'asc' }
+    });
+
+    return events.map(event => {
+      return {
+        name: event.name,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        aggregateId: AggregateId.parse(event.aggregateId)!,
+        timestamp: event.timestamp,
+        payload: superjson.parse(event.payload)
+      };
+    });
   }
 }

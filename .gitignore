@@ -14,4 +14,5 @@ pids
 *.pid
 *.seed
 .eslintcache
-read_projection.json
+projection.json
+src/core/infrastructure/prisma/migrations/
