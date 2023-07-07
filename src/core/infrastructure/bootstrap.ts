@@ -77,5 +77,5 @@ async function initialize(): Promise<void> {
   const eventStore = ServiceLocator.resolve<EventStore>('EventStore');
   const projection = ServiceLocator.resolve<EventProjection>('EventProjection');
 
-  await projection.replay(eventStore);
+  await projection.applyAll(eventStore);
 }

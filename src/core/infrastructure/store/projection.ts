@@ -5,8 +5,10 @@ import { type Address, type Portfolio, type PortfolioId } from '@core/domain/por
 import { type EventStore } from './store';
 
 export interface EventProjection {
-  replay(eventStore: EventStore): Promise<void>;
   apply(event: DomainEvent): Promise<void>;
+  applyAll(eventStore: EventStore): Promise<void>;
+  replay(event: EventStore): Promise<void>;
+
   portfolios(): Promise<Map<PortfolioId, Portfolio>>;
   addresses(): Promise<Set<Address>>;
 }

@@ -10,7 +10,7 @@ import {
   type BuildingCreated
 } from '@core/domain/portfolio/events';
 import { type EventProjection } from './projection';
-import { FindQuery, type EventStore } from './store';
+import { FindQuery as Q, type EventStore } from './store';
 
 type State = {
   lastTimestamp: Date;
@@ -33,14 +33,6 @@ export class JsonMappedEventProjection implements EventProjection {
     setInterval(() => this.save(filePath), saveIntervalMs);
   }
 
-  public async replay(eventStore: EventStore): Promise<void> {
-    const events = await eventStore.find(FindQuery.LaterThan(this.state.lastTimestamp));
-
-    for (const event of events) {
-      await this.apply(event);
-    }
-  }
-
   public async apply(event: DomainEvent): Promise<void> {
     return new Promise(resolve => {
       // assumes that events are always ordered by timestamp
@@ -54,6 +46,27 @@ export class JsonMappedEventProjection implements EventProjection {
       resolve();
     });
   }
+
+  public async applyAll(eventStore: EventStore): Promise<void> {
+    const events = await eventStore.find(Q.LaterThan(this.state.lastTimestamp));
+
+    for (const event of events) {
+      await this.apply(event);
+    }
+  }
+
+  public async replay(eventStore: EventStore): Promise<void> {
+    const events = await eventStore.find(Q.All());
+
+    this.state.addresses.clear();
+    this.state.portfolios.clear();
+    this.state.lastTimestamp = new Date(0);
+
+    for (const event of events) {
+      await this.apply(event);
+    }
+  }
+
 
   public portfolios(): Promise<Map<PortfolioId, Portfolio>> {
     return new Promise(resolve => {
