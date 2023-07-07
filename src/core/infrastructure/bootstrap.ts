@@ -20,7 +20,7 @@ import {
   GetPortfolioHandler,
   GetPortfolioHistoryHandler
 } from '@core/application/portfolio/queries';
-import { getEnvStr } from './config';
+import { CoreConfig } from './config';
 import { InMemoryDomainEventBus } from './events';
 import { InMemoryCommandBus, InMemoryQueryProcessor } from './messages';
 import { EventStoreHandler } from './store/store';
@@ -29,10 +29,6 @@ import { EventProjectionHandler, type EventProjection } from './store/projection
 import { JsonMappedEventProjection } from './store/jsonProjection';
 import { EventProjectionPortfolioRepository } from './portfolio/repository';
 import { StorePortfolioHistory } from './portfolio/service';
-
-export const CoreConfig = Object.freeze({
-  READ_PROJECTION_FILE: getEnvStr('READ_PROJECTION_FILE', 'event-store.json')
-});
 
 export async function bootstrap(): Promise<void> {
   const factories: Record<string, () => unknown> = {

@@ -1,4 +1,4 @@
-import { getEnvStr, getEnvNum } from '../../core/infrastructure/config';
+import { getEnvStr, getEnvNum } from '@shared/utils';
 
 export const RestConfig = Object.freeze({
   PORT: getEnvNum('PORT', 3000),
