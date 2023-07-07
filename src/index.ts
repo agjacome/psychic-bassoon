@@ -7,7 +7,7 @@ const main = async () => {
   await core.bootstrap();
   console.log('Core initialized');
 
-  await rest.bootstrap();
+  rest.bootstrap();
   console.log('REST API initialized');
 
   const server = ServiceLocator.resolve<Server>('Server');

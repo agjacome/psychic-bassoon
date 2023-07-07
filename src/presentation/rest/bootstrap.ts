@@ -2,7 +2,7 @@ import { ServiceLocator } from '@shared/utils';
 import { PortfolioController } from './portfolio/controller';
 import { Server } from './server';
 
-export const bootstrap = async () => {
+export function bootstrap(): void {
   const factories: Record<string, () => unknown> = {
     PortfolioController: () => {
       return new PortfolioController();
@@ -15,6 +15,4 @@ export const bootstrap = async () => {
   Object.entries(factories).forEach(([name, factory]) => {
     ServiceLocator.register(name, factory);
   });
-
-  return Promise.resolve();
-};
+}

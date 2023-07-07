@@ -2,7 +2,7 @@ import type express from 'express';
 
 import { type PortfolioController } from './controller';
 
-export const setup = (router: express.Router, controller: PortfolioController): void => {
+export function setup(router: express.Router, controller: PortfolioController): void {
   router.get('/portfolios/:portfolioId', (req, res, next) => {
     controller.getPortfolioById(req, res).catch(next);
   });

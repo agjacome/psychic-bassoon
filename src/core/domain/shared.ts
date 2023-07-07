@@ -6,15 +6,15 @@ import { type Opaque } from '@shared/types';
 export type AggregateId = Opaque<string, 'AggregateId'>;
 
 export const AggregateId = {
-  generate: (): AggregateId => {
+  generate(): AggregateId {
     const buffer = crypto.randomBytes(4);
     return proquint.encode(buffer) as AggregateId;
   },
-  validate: (id: string): boolean => {
+  validate(id: string): boolean {
     return proquint.decode(id).byteLength === 4;
   },
-  parse: (id: string): AggregateId | null => {
-    return AggregateId.validate(id) ? (id as AggregateId) : null;
+  parse(id: string): AggregateId | null {
+    return this.validate(id) ? (id as AggregateId) : null;
   }
 };
 

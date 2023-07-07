@@ -28,7 +28,7 @@ export const CoreConfig = Object.freeze({
   READ_PROJECTION_FILE: getEnvStr('READ_PROJECTION_FILE', 'event-store.json')
 });
 
-export const bootstrap = async () => {
+export async function bootstrap(): Promise<void> {
   const factories: Record<string, () => unknown> = {
     PrismaClient: () => {
       return new PrismaClient();
@@ -71,11 +71,11 @@ export const bootstrap = async () => {
   });
 
   await initialize();
-};
+}
 
-const initialize = async () => {
+async function initialize(): Promise<void> {
   const eventStore = ServiceLocator.resolve<EventStore>('EventStore');
   const projection = ServiceLocator.resolve<EventProjection>('EventProjection');
 
   await projection.replay(eventStore);
-};
+}

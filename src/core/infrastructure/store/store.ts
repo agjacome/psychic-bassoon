@@ -15,33 +15,26 @@ export type FindQuery =
   | ReturnType<typeof FindQuery.LaterThan>;
 
 export const FindQuery = {
-  All: () => {
+  All() {
     return { type: 'All' } as const;
   },
-  Name: (name: string) => {
+  Name(name: string) {
     return { type: 'Name', name } as const;
   },
-  AggregateId: (aggregateId: AggregateId) => {
+  AggregateId(aggregateId: AggregateId) {
     return { type: 'AggregateId', aggregateId } as const;
   },
-  AggregateIdBeforeThan: (aggregateId: AggregateId, timestamp: Date) => {
-    return {
-      type: 'AggregateIdBeforeThan',
-      aggregateId,
-      timestamp
-    } as const;
+  AggregateIdBeforeThan(aggregateId: AggregateId, timestamp: Date) {
+    return { type: 'AggregateIdBeforeThan', aggregateId, timestamp } as const;
   },
-  LaterThan: (timestamp: Date) => {
-    return {
-      type: 'LaterThan',
-      timestamp
-    } as const;
+  LaterThan(timestamp: Date) {
+    return { type: 'LaterThan', timestamp } as const;
   }
 };
 
 @sealed
 export class EventStoreHandler implements DomainEventHandler<DomainEvent> {
-  constructor(private readonly store = ServiceLocator.resolve<EventStore>('EventStore')) {}
+  constructor(private readonly store = ServiceLocator.resolve<EventStore>('EventStore')) { }
 
   public matches(_event: DomainEvent): _event is DomainEvent {
     return true;
