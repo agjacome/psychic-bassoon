@@ -6,6 +6,7 @@ import { ServiceLocator } from '@shared/utils';
 import { RestConfig } from './config';
 import { type PortfolioController } from './portfolio/controller';
 import { PortfolioRoutes } from './portfolio/routes';
+import { PortfolioErrorMiddleware } from './portfolio/middleware';
 
 @sealed
 export class Server {
@@ -15,13 +16,12 @@ export class Server {
     private readonly portfolio = ServiceLocator.resolve<PortfolioController>('PortfolioController')
   ) {
     this.app = express();
-
-    this.app.use(cors());
-    this.app.use(express.json());
-    this.app.use(express.urlencoded({ extended: true }));
-    this.app.use(RestConfig.BASE_PATH, this.router());
-
     this.app.disable('x-powered-by');
+
+    this.app.use([cors(), express.json(), express.urlencoded({ extended: true })]);
+
+    this.app.use(RestConfig.BASE_PATH, this.router());
+    this.app.use(this.middleware());
   }
 
   public start() {
@@ -35,11 +35,15 @@ export class Server {
     }
   }
 
-  private router() {
+  private router(): express.Router {
     const router = express.Router();
 
     PortfolioRoutes.setup(router, this.portfolio);
 
     return router;
+  }
+
+  private middleware() {
+    return [PortfolioErrorMiddleware];
   }
 }
